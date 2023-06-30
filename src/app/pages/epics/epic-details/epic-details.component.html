@@ -1,0 +1,55 @@
+<div class="row" *ngIf="epicData">
+  <div class=" pt-3 d-flex justify-content-end">
+    <button *ngIf="epicData.status === statuses[0]" type="button" class="btn btn-outline-primary m-1"
+            (click)="changeStatus()">Zacznij
+    </button>
+    <button *ngIf="epicData.status === statuses[1]" [disabled]="isTasksAreDone" type="button"
+            class="btn btn-outline-success m-1" (click)="changeStatus()">Zakończ
+    </button>
+    <button type="button" class="btn btn-outline-warning m-1" routerLink="/{{projectId}}/{{epicId}}/edit">Edytuj
+    </button>
+    <button type="button" class="btn btn-outline-danger m-1" (click)="delete(epicData.name)">Usuń</button>
+  </div>
+  <h2 class="text-center pb-5">{{epicData.name}}</h2>
+  <div class="col-6">
+    <p class="card-text">
+      <b>Piorytet:</b> {{epicData.priority}}
+    </p>
+    <p class="card-text">
+      <b>Status:</b> {{epicData.status}}
+    </p>
+    <p class="card-text">
+      <b>Własciciel:</b> {{epicData.owner.firstName}} {{epicData.owner.lastName}}
+    </p>
+    <p class="card-text" *ngIf="getUsers()">
+      <b>Uczestnicy: </b>
+      <ng-container *ngFor="let user of epicsUsers; let last = last">
+        {{user.firstName}} {{user.lastName}}<span *ngIf="!last">, </span>
+      </ng-container>
+    </p>
+  </div>
+  <div class="col-6">
+    <p class="card-text" *ngIf="epicData.createdTime">
+      <b>Stworzono: </b>
+      {{epicData.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+    </p>
+    <p class="card-text" *ngIf="epicData.startTime">
+      <b>Rozpoczęto: </b>
+      {{epicData.startTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+    </p>
+    <p class="card-text" *ngIf="epicData.finishTime">
+      <b>Zakończono: </b>
+      {{epicData.finishTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+    </p>
+    <p class="card-text" *ngIf="epicData.startTime">
+      <b>Czas
+        trwania:</b> {{(epicData.finishTime ? epicData.finishTime : getCurrentTime())  | duration: epicData.startTime}}
+    </p>
+    <p class="card-text">
+      <b>Roboczogodziny:</b> {{getWorkingTime() | displayDuration}}
+    </p>
+  </div>
+  <p class="card-text pt-5 pb-3">
+    {{epicData.description}}
+  </p>
+</div>

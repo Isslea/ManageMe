@@ -1,0 +1,53 @@
+<div class="position-fixed bottom-0 end-0 p-3" routerLink="/{{projectId}}/{{epicId}}/create">
+  <button class="btn btn-primary">Dodaj</button>
+</div>
+<div routerLink="/{{projectId}}/epics">
+  <button class="btn btn-primary">wroc</button>
+</div>
+
+<div class="row">
+
+    <div class="col-md-10 offset-1">
+      <app-epic-details [tasks]="data" class="col-12"></app-epic-details>
+    <table class="table col-12" *ngIf="data.length > 0">
+      <thead>
+      <tr class="text-center w-400">
+
+        <th class="col" *ngFor="let status of statuses">
+          <ng-container *ngIf="currentStatuses.includes(status)">
+          {{status | uppercase}}
+          </ng-container>
+        </th>
+
+      </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td  *ngFor="let status of statuses">
+
+              <div class="d-flex justify-content-center" *ngFor="let item of data | statusFilter: status">
+                <a class="text-decoration-none"  routerLink="/{{projectId}}/{{epicId}}/{{item.id}}/details">
+            <div class="card bg-light mb-3 " style="max-width: 18rem;" >
+
+              <div class="card-header text-center" style="color: black">
+                <h4>{{item.name}}</h4>
+              </div>
+
+              <div class="card-body">
+                <p class="card-text">
+                  <b>Przypisany:</b> {{item.user.firstName}} {{item.user.lastName}}
+                  <b>Piorytet: </b> {{item.priority}}
+                </p>
+                  <ng-container *ngIf="item.startTime">
+                    <b>Czas trwania: {{(item.finishTime ? item.finishTime : getCurrentTime())  | duration: item.startTime}}</b>
+                  </ng-container>
+              </div>
+            </div>
+                </a>
+              </div>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+</div>

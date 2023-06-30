@@ -1,0 +1,43 @@
+<div class="row" *ngIf="projectData">
+  <div class=" pt-3 d-flex justify-content-end">
+    <button *ngIf="!projectData.finishedTime" [disabled]="isEpicsAreDone" type="button"
+            class="btn btn-outline-success m-1" (click)="finishProject()">Zakończ
+    </button>
+    <button type="button" class="btn btn-outline-warning m-1" routerLink="/{{projectId}}/edit">Edytuj
+    </button>
+    <button type="button" class="btn btn-outline-danger m-1" (click)="delete(projectData.name)">Usuń</button>
+  </div>
+  <h2 class="text-center pb-5">{{projectData.name}}</h2>
+  <div class="col-6">
+    <p class="card-text" *ngIf="dueDate">
+      <b>Przewidywany czas: </b>
+      {{dueDate | displayDuration }}
+    </p>
+    <p class="card-text" *ngIf="projectUsers">
+      <b>Uczestnicy: </b>
+      <ng-container *ngFor="let user of projectUsers; let last = last">
+        {{user.firstName}} {{user.lastName}}<span *ngIf="!last">, </span>
+      </ng-container>
+    </p>
+  </div>
+  <div class="col-6">
+   <p class="card-text" *ngIf="projectData.createdTime">
+      <b>Stworzono: </b>
+      {{projectData.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+    </p>
+    <p class="card-text" *ngIf="projectData.finishedTime">
+      <b>Zakończono: </b>
+      {{projectData.finishedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+    </p>
+   <p class="card-text" *ngIf="projectData.createdTime">
+      <b>Czas
+        trwania:</b> {{(projectData.finishedTime ? projectData.finishedTime : getCurrentTime())  | duration: projectData.createdTime}}
+    </p>
+   <p class="card-text" *ngIf="projectWorkingTime">
+      <b>Roboczogodziny:</b>{{projectWorkingTime | displayDuration}}
+    </p>
+  </div>
+  <p class="card-text pt-5 pb-3">
+    {{projectData.description}}
+  </p>
+</div>

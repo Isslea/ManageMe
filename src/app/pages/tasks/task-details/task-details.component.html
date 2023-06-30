@@ -1,0 +1,71 @@
+<div class="row p-5" *ngIf="data">
+  <div class="col-md-10 offset-1">
+    <div class="card mb-12">
+      <div class="row g-0">
+        <div class="col-md-12">
+          <div class="card-header">
+            <h1 class="card-title">
+              {{data.name}}
+            </h1>
+          </div>
+        </div>
+        <div class="col-md-12">
+        <div class="pt-3 d-flex justify-content-end">
+          <button *ngIf="data.status === statuses[0]" type="button" class="btn btn-outline-primary m-1" (click)="changeStatus()">Zacznij</button>
+          <button *ngIf="data.status === statuses[1]" type="button" class="btn btn-outline-success m-1" (click)="changeStatus()">Zakończ</button>
+          <button type="button" class="btn btn-outline-warning m-1" routerLink="/{{projectId}}/{{epicId}}/{{taskId}}/edit">Edytuj</button>
+          <button type="button" class="btn btn-outline-danger m-1" (click)="delete(data.name)">Usuń</button>
+        </div>
+        </div>
+        <div class="col-md-5">
+          <div class="card-body">
+            <p class="card-text">
+              <b>Przypisany:</b> {{data.user.firstName}} {{data.user.lastName}}
+            </p>
+            <p class="card-text">
+              <b>Projekt: </b> {{project.name}}
+            </p>
+            <p class="card-text">
+              <b>Epic: </b> {{epic.name}}
+            </p>
+            <p class="card-text">
+              <b>Piorytet: </b> {{data.priority}}
+            </p>
+            <p class="card-text">
+              <b>Status: </b> {{data.status}}
+            </p>
+            <p class="card-text" *ngIf="data.createdTime">
+              <b>Stworzono: </b>
+              {{data.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+            </p>
+            <p class="card-text" *ngIf="data.startTime">
+              <b>Rozpoczęto: </b>
+                {{data.startTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+            </p>
+            <p class="card-text" *ngIf="data.finishTime">
+              <b>Zakończono: </b>
+              {{data.finishTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+            </p>
+            <p class="card-text" *ngIf="data.startTime">
+              <b>Czas trwania: {{(data.finishTime ? data.finishTime : getCurrentTime())  | duration: data.startTime}}</b>
+            </p>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="card-body">
+          <p class="card-text">{{data.description}}</p>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="card-body">
+            <p class="card-text">
+              <a class="btn btn-outline-primary" routerLink="/{{this.projectId}}/{{this.epicId}}/tasks">
+                Wróć
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

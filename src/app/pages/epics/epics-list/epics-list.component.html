@@ -1,0 +1,45 @@
+<div class="position-fixed bottom-0 end-0 p-3" routerLink="/{{projectId}}/create">
+  <button class="btn btn-primary">Dodaj</button>
+</div>
+
+<div routerLink="/projects">
+  <button class="btn btn-primary">wroc</button>
+</div>
+
+<div class="row">
+  <div class="col-md-10 offset-1">
+    <app-project-details [epics]="epicData"></app-project-details>
+   <div class="d-flex justify-content-center">
+    <button *ngFor="let status of statuses" class="btn btn-primary m-3" (click)="filterEpics(status)">{{status}}</button>
+   </div>
+    <table class="table"*ngIf="epicData.length > 0">
+      <thead>
+      <tr>
+        <th>Nazwa</th>
+        <th>Piorytet</th>
+        <th>Owner</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngFor="let item of filteredData">
+        <tr *ngIf="item.id" (click)="details(item.id)">
+          <td class="align-middle">
+            {{item.name}}
+          </td>
+
+          <td class="align-middle">
+            {{item.priority}}
+          </td>
+          <td class="align-middle">
+            {{item.owner.firstName}} {{item.owner.lastName}}
+          </td>
+          <td class="align-middle">
+            {{item.status}}
+          </td>
+        </tr>
+      </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>
