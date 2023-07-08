@@ -8,8 +8,8 @@
 <div class="row">
 
     <div class="col-md-10 offset-1">
-      <app-epic-details [tasks]="data" class="col-12"></app-epic-details>
-    <table class="table col-12" *ngIf="data.length > 0">
+      <app-epic-details [taskData]="taskData" class="col-12"></app-epic-details>
+    <table class="table col-12" *ngIf="taskData.length > 0">
       <thead>
       <tr class="text-center w-400">
 
@@ -24,28 +24,22 @@
       <tbody>
         <tr>
           <td  *ngFor="let status of statuses">
-
-              <div class="d-flex justify-content-center" *ngFor="let item of data | statusFilter: status">
-                <a class="text-decoration-none"  routerLink="/{{projectId}}/{{epicId}}/{{item.id}}/details">
-            <div class="card bg-light mb-3 " style="max-width: 18rem;" >
-
-              <div class="card-header text-center" style="color: black">
-                <h4>{{item.name}}</h4>
-              </div>
-
-              <div class="card-body">
-                <p class="card-text">
-                  <b>Przypisany:</b> {{item.user.firstName}} {{item.user.lastName}}
-                  <b>Piorytet: </b> {{item.priority}}
-                </p>
-                  <ng-container *ngIf="item.startedTime">
-                    <b>Czas trwania: {{ {startDate: item.startedTime, endDate: item.finishedTime ? item.finishedTime : this.timeService.getCurrentTime() }| duration }}</b>
-                  </ng-container>
+            <div class="d-flex justify-content-center" *ngFor="let item of taskData | statusFilter: status" routerLink="/{{projectId}}/{{epicId}}/{{item.id}}/details">
+              <div class="card bg-light mb-3 " style="max-width: 18rem;" >
+                <div class="card-header text-center" style="color: black">
+                  <h4>{{item.name}}</h4>
+                </div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <b>Przypisany:</b> {{item.user.firstName}} {{item.user.lastName}}
+                    <b>Piorytet: </b> {{item.priority}}
+                  </p>
+                    <ng-container *ngIf="item.startedTime">
+                      <b>Czas trwania: {{ {startDate: item.startedTime, endDate: item.finishedTime ? item.finishedTime : this.timeService.getCurrentTime() }| duration }}</b>
+                    </ng-container>
+                </div>
               </div>
             </div>
-                </a>
-              </div>
-
           </td>
         </tr>
       </tbody>

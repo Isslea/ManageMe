@@ -3,25 +3,25 @@ import {TaskModel} from "../../../models/task.model";
 import {EpicModel} from "../../../models/epic.model";
 import {CrudService} from "../../../services/crud.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StatusEnum} from "../../../models/status.enum";
 import {ProjectModel} from "../../../models/project.model";
 import {UserModel} from "../../../models/user.model";
 import {CalculationsService} from "../../../services/calculations.service";
-import {forkJoin} from "rxjs";
+import {forkJoin, of} from "rxjs";
 import {TimeService} from "../../../services/time.service";
+import {extractRouteParams} from "../../../functions/get-routes";
 @Component({
   selector: 'app-project-details',
   templateUrl: './project-details.component.html',
   styleUrls: ['./project-details.component.scss']
 })
 export class ProjectDetailsComponent implements OnInit, OnChanges{
-  @Input() epics!: EpicModel[]
-  tasks!: TaskModel[];
-  projectData!: ProjectModel
+  @Input() epicData!: EpicModel[]
   projectId: string;
   epicId: string;
-  isEpicsAreDone!: boolean;
+  projectData!: ProjectModel
+  tasks!: TaskModel[];
   users!: UserModel[]
+  isEpicsAreDone!: boolean;
   workingTime! : number;
   predictedTime! : Date;
   tasksToDelete!: string[];
@@ -29,34 +29,31 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
 
 
   constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router, private calc: CalculationsService, public timeService: TimeService) {
-    this.projectId = this.route.snapshot.paramMap.get("project")!;
-    this.epicId = this.route.snapshot.paramMap.get("epic")!;
-
+    const { projectId, epicId} = extractRouteParams(route);
+    this.projectId = projectId!;
+    this.epicId = epicId!;
   }
 
   ngOnInit() {
-    this.crudService.getById<ProjectModel>(`projects`, this.projectId).subscribe(data => {
-      this.projectData = data;
-    })
-
-    this.crudService.getAll<TaskModel>("tasks").subscribe(data => {
-      this.tasks = data.filter(x => x.projectId === this.projectId);
+    forkJoin([
+      this.crudService.getById<ProjectModel>(`projects`, this.projectId),
+      this.crudService.getAll<TaskModel>("tasks")
+    ]).subscribe(([projectData, taskData]) => {
+      this.projectData = projectData;
+      this.tasks = taskData.filter(x => x.projectId === this.projectId);
+      this.tasksToDelete = this.tasks.map(x => x.id).filter(id => !!id) as string[];
       this.users = this.calc.getUsers(this.tasks);
       this.workingTime = this.calc.getWorkingTime(this.tasks);
       this.predictedTime = this.calc.getPredictedTime(this.tasks);
-
-      this.tasksToDelete = this.tasks.map(x => x.id).filter(id => !!id) as string[];
-
-    })
+    });
 
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['epics'] && this.epics) {
-        this.isEpicsAreDone = this.epics && this.epics.some((x) => x.finishedTime === undefined);
-        this.epicsToDelete = this.epics.map(x => x.id).filter(id => !!id) as string[];
+    if (changes['epicData'] && this.epicData ) {
+        this.isEpicsAreDone = this.epicData.some((x) => x.finishedTime === undefined);
+        this.epicsToDelete = this.epicData.map(x => x.id).filter(id => !!id) as string[];
     }
-
   }
 
   finishProject(){
@@ -64,14 +61,13 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
     this.crudService.updatePartial<ProjectModel>(updatedData, `projects`, this.projectId).subscribe(data => {
       window.location.reload();
     })
-
   }
 
   delete(name: string) {
-    const deleteTasks$ = this.crudService.deleteRelated('tasks', this.tasksToDelete);
-    const deleteEpics$ = this.crudService.deleteRelated('epics', this.epicsToDelete);
-
-    forkJoin([deleteTasks$, deleteEpics$]).subscribe(() => {
+    forkJoin([
+      this.tasksToDelete.length > 0 ? this.crudService.deleteRelated('tasks', this.tasksToDelete) : of(null),
+      this.tasksToDelete.length > 0 ? this.crudService.deleteRelated('epics', this.epicsToDelete) : of(null)
+    ]).subscribe(() => {
       this.crudService.deleteById('projects', this.projectId, name)!.subscribe(() => {
         this.router.navigate(['/projects']);
       });

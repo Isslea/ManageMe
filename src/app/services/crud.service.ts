@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {forkJoin, map, Observable} from "rxjs";
+import {forkJoin, map, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +31,6 @@ export class CrudService {
       updatedData
     );
   }
-
-
 
   getAll<T>(filename: string) {
     return this.http
@@ -68,7 +66,6 @@ export class CrudService {
     }));
   }
 
-
   deleteById(filename: string, id: string, name: string) {
     const confirmed = window.confirm(`Are you sure you want to delete ${name}?`);
     if (confirmed) {
@@ -77,5 +74,4 @@ export class CrudService {
     }
     return null
   }
-
 }

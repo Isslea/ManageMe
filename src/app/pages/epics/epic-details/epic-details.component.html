@@ -21,7 +21,7 @@
     <p class="card-text">
       <b>Własciciel:</b> {{epicData.owner.firstName}} {{epicData.owner.lastName}}
     </p>
-   <p class="card-text" *ngIf="epicsUsers">
+   <p class="card-text" *ngIf="epicsUsers.length > 0">
       <b>Uczestnicy: </b>
       <ng-container *ngFor="let user of epicsUsers; let last = last">
         {{user.firstName}} {{user.lastName}}<span *ngIf="!last">, </span>

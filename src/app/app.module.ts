@@ -11,9 +11,9 @@ import { EpicsListComponent } from './pages/epics/epics-list/epics-list.componen
 import { EpicFormComponent } from './pages/epics/epic-form/epic-form.component';
 import { TasksListComponent } from './pages/tasks/tasks-list/tasks-list.component';
 import { TaskFormComponent } from './pages/tasks/task-form/task-form.component';
-import { StatusFilterPipe } from './pages/pipes/status-filter.pipe';
+import { StatusFilterPipe } from './pipes/status-filter.pipe';
 import { TaskDetailsComponent } from './pages/tasks/task-details/task-details.component';
-import { DurationPipe } from './pages/pipes/duration.pipe';
+import { DurationPipe } from './pipes/duration.pipe';
 import { EpicDetailsComponent } from './pages/epics/epic-details/epic-details.component';
 import { ProjectDetailsComponent } from './pages/projects/project-details/project-details.component';
 

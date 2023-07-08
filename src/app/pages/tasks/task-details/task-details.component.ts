@@ -6,8 +6,8 @@ import {StatusEnum} from "../../../models/status.enum";
 import {ProjectModel} from "../../../models/project.model";
 import {EpicModel} from "../../../models/epic.model";
 import {forkJoin} from "rxjs";
-import {CalculationsService} from "../../../services/calculations.service";
 import {TimeService} from "../../../services/time.service";
+import {extractRouteParams} from "../../../functions/get-routes";
 
 @Component({
   selector: 'app-task-details',
@@ -16,38 +16,36 @@ import {TimeService} from "../../../services/time.service";
 })
 export class TaskDetailsComponent implements OnInit{
   projectId: string;
-  project!: ProjectModel;
   epicId: string;
-  epic!: EpicModel
   taskId: string;
-  filename: string;
-  data!: TaskModel;
   statuses: string[];
+  projectData!: ProjectModel;
+  epicData!: EpicModel
+  taskData!: TaskModel;
 
 
   constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router, public timeService: TimeService){
-    this.projectId = this.route.snapshot.paramMap.get("project")!;
-    this.epicId = this.route.snapshot.paramMap.get('epic')!;
-    this.taskId = this.route.snapshot.paramMap.get('task')!;
-    this.filename = `tasks`
+    const { projectId, epicId, taskId } = extractRouteParams(route);
+    this.projectId = projectId!;
+    this.epicId = epicId!;
+    this.taskId = taskId!;
     this.statuses = Object.values(StatusEnum);
   }
 
   ngOnInit() {
     forkJoin([
-      this.crudService.getById<TaskModel>(this.filename, this.taskId),
       this.crudService.getById<ProjectModel>('projects', this.projectId),
-      this.crudService.getById<EpicModel>(`epics`, this.epicId)
-    ]).subscribe(([taskData, projectData, epicData]) => {
-      this.data = taskData;
-      this.project = projectData;
-      this.epic = epicData;
+      this.crudService.getById<EpicModel>(`epics`, this.epicId),
+      this.crudService.getById<TaskModel>('tasks', this.taskId)
+    ]).subscribe(([projectData, epicData, taskData]) => {
+      this.projectData = projectData;
+      this.epicData = epicData;
+      this.taskData = taskData;
     });
   }
 
   delete(name: string) {
-
-    this.crudService.deleteById(this.filename, this.taskId, name)!.subscribe(() => {
+    this.crudService.deleteById('tasks', this.taskId, name)!.subscribe(() => {
       this.router.navigate([`${this.projectId}/${this.epicId}/tasks`]);
     });
   }
@@ -55,24 +53,27 @@ export class TaskDetailsComponent implements OnInit{
   changeStatus() {
     let updatedData: Partial<TaskModel> = {};
 
-    switch (this.data.status) {
+    switch (this.taskData.status) {
       case StatusEnum.toDo:
         updatedData = {status: StatusEnum.doing, startedTime: new Date()};
-        forkJoin([
-          this.crudService.updatePartial<TaskModel>(updatedData, this.filename, this.taskId),
-          this.crudService.updatePartial<EpicModel>(updatedData, `epics`, this.epicId)
-        ]).subscribe(() => {
-          window.location.reload();
-        });
         break;
       case StatusEnum.doing:
         updatedData = {status: StatusEnum.done, finishedTime: new Date()};
-        this.crudService.updatePartial<TaskModel>(updatedData, this.filename, this.taskId).subscribe(data => {
-          window.location.reload();
-        })
         break;
     }
+
+    if(this.epicData.status == StatusEnum.toDo){
+      forkJoin([
+        this.crudService.updatePartial<TaskModel>(updatedData, 'tasks', this.taskId),
+        this.crudService.updatePartial<EpicModel>(updatedData, `epics`, this.epicId)
+      ]).subscribe(() => {
+        window.location.reload();
+      });
+    }
+    else {
+      this.crudService.updatePartial<TaskModel>(updatedData, 'tasks', this.taskId).subscribe(data => {
+        window.location.reload();
+      })
+    }
   }
-
-
 }

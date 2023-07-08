@@ -7,6 +7,7 @@ import {UserService} from "../../../services/user.service";
 import {UserModel} from "../../../models/user.model";
 import {StatusEnum} from "../../../models/status.enum";
 import {PriorityEnum} from "../../../models/priority.enum";
+import {extractRouteParams} from "../../../functions/get-routes";
 
 @Component({
   selector: 'app-epic-form',
@@ -18,7 +19,6 @@ export class EpicFormComponent implements OnInit{
   isEditMode: boolean;
   projectId: string;
   epicId: string;
-  filename!: string;
   users: UserModel[];
   priorities: string[];
   statuses: string[];
@@ -26,19 +26,17 @@ export class EpicFormComponent implements OnInit{
   selectedPriority: string = ""
 
   constructor(private crudService: CrudService, private userService: UserService, private route: ActivatedRoute, private router: Router) {
+    const { projectId, epicId, edit } = extractRouteParams(route);
+    this.projectId = projectId!;
+    this.epicId = epicId!;
+    this.isEditMode = edit!;
     this.users = this.userService.getUsers();
     this.priorities = Object.values(PriorityEnum);
     this.statuses = Object.values(StatusEnum);
-    this.isEditMode = this.route.snapshot.routeConfig?.path?.includes('edit')!
-    this.projectId = this.route.snapshot.paramMap.get("project")!;
-    this.epicId = this.route.snapshot.paramMap.get('epic')!;
-    this.filename = `epics`
-
   }
 
   ngOnInit() {
     this.form = this.createForm();
-
     if(this.isEditMode)
     {
       this.fillForm();
@@ -49,7 +47,7 @@ export class EpicFormComponent implements OnInit{
     data.owner = this.users.find(x => x.id == this.selectedUser) as UserModel
 
     if(this.isEditMode) {
-      this.crudService.updatePartial<EpicModel>(data, this.filename, this.epicId).subscribe(()=> {
+      this.crudService.updatePartial<EpicModel>(data, 'epics', this.epicId).subscribe(()=> {
           this.router.navigate([`${this.projectId}/${this.epicId}/tasks`]);
         }
       );
@@ -57,8 +55,7 @@ export class EpicFormComponent implements OnInit{
       data.status = StatusEnum.toDo;
       data.createdTime = new Date();
       data.projectId = this.projectId;
-      this.crudService.sendForm<EpicModel>(data, this.filename).subscribe(x => {
-        this.form.reset()
+      this.crudService.sendForm<EpicModel>(data, 'epics').subscribe(x => {
         this.router.navigate([`${this.projectId}/epics`]);
       });
     }
@@ -80,7 +77,7 @@ export class EpicFormComponent implements OnInit{
   }
 
   fillForm() {
-    this.crudService.getById<EpicModel>(this.filename, this.epicId).subscribe(data => {
+    this.crudService.getById<EpicModel>('epics', this.epicId).subscribe(data => {
       this.form.patchValue({
         'name': data!.name,
         'description': data!.description,

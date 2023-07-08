@@ -5,12 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class TimeService {
 
-  constructor() {
-  }
-
   getCurrentTime(): Date {
     return new Date();
   }
-
-
 }

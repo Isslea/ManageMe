@@ -21,7 +21,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="dueTime">Nazwa</label>
+            <label for="dueTime">Przewidywana data</label>
             <input type="date" id="dueTime" formControlName="dueTime" class="form-control">
             <span *ngIf="form!.get('dueTime')!.errors?.['dateIsBeforeToday'] && (form!.get('dueTime')!.dirty || form!.get('dueTime')!.touched)">Wybrana data jest wcześniejsza niż dzisiaj!</span>
           </div>
@@ -31,8 +31,7 @@
           </div>
           <div class="form-group">
             <input type="submit" value="Zapisz" class="btn btn-outline-success" [disabled]="!form!.valid"/>
-            <a *ngIf="isEditMode" class="btn btn-outline-secondary" routerLink="/{{this.projectId}}/{{this.epicId}}/{{this.taskId}}/details">Anuluj</a>
-            <a *ngIf="!isEditMode" class="btn btn-outline-secondary" routerLink="/{{this.projectId}}/{{this.epicId}}/tasks">Anuluj</a>
+            <a class="btn btn-outline-secondary" routerLink="/{{this.projectId}}/{{this.epicId}}/{{isEditMode ? taskId + '/details' : 'tasks'}}">Anuluj</a>
           </div>
 
         </form>

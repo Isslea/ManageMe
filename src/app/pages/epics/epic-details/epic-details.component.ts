@@ -7,6 +7,8 @@ import {StatusEnum} from "../../../models/status.enum";
 import {UserModel} from "../../../models/user.model";
 import {CalculationsService} from "../../../services/calculations.service";
 import {TimeService} from "../../../services/time.service";
+import {extractRouteParams} from "../../../functions/get-routes";
+import {forkJoin, of} from "rxjs";
 
 @Component({
   selector: 'app-epic-details',
@@ -14,19 +16,20 @@ import {TimeService} from "../../../services/time.service";
   styleUrls: ['./epic-details.component.scss']
 })
 export class EpicDetailsComponent implements OnInit{
-  @Input() tasks!: TaskModel[]
-  epicData!: EpicModel
   projectId: string;
   epicId: string;
   statuses: string[];
+  epicData!: EpicModel
+  @Input() taskData!: TaskModel[]
   isTasksAreDone!: boolean;
   epicsUsers!: UserModel[];
   workingTime!: number;
   tasksToDelete!: string[];
 
-  constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router, private calc: CalculationsService, public timeService: TimeService) {
-    this.projectId = this.route.snapshot.paramMap.get("project")!;
-    this.epicId = this.route.snapshot.paramMap.get("epic")!;
+  constructor(private crudService: CrudService, private router: Router, private route: ActivatedRoute,private calc: CalculationsService, public timeService: TimeService) {
+    const { projectId, epicId} = extractRouteParams(route);
+    this.projectId = projectId!;
+    this.epicId = epicId!;
     this.statuses = Object.values(StatusEnum)
   }
 
@@ -37,14 +40,11 @@ export class EpicDetailsComponent implements OnInit{
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['tasks']) {
-      this.isTasksAreDone = this.tasks && this.tasks.some(task => task.finishedTime === undefined)
-      if (this.tasks) {
-        this.epicsUsers = this.calc.getUsers(this.tasks);
-        this.workingTime = this.calc.getWorkingTime(this.tasks);
-        this.tasksToDelete = this.tasks.map(x => x.id).filter(id => !!id) as string[];
-      }
-
+    if (changes['taskData'] && this.taskData) {
+      this.isTasksAreDone = this.taskData.some(task => task.finishedTime === undefined)
+      this.epicsUsers = this.calc.getUsers(this.taskData);
+      this.workingTime = this.calc.getWorkingTime(this.taskData);
+      this.tasksToDelete = this.taskData.map(x => x.id).filter(id => !!id) as string[];
     }
   }
 
@@ -60,18 +60,17 @@ export class EpicDetailsComponent implements OnInit{
         break;
     }
 
-    if (updatedData) {
-      this.crudService.updatePartial<EpicModel>(updatedData, `epics`, this.epicId).subscribe(data => {
-        window.location.reload();
-      })
-    }
+    this.crudService.updatePartial<EpicModel>(updatedData, `epics`, this.epicId).subscribe(data => {
+      window.location.reload();
+    })
   }
 
   delete(name: string) {
-    this.crudService.deleteRelated('tasks', this.tasksToDelete).subscribe(() => {
-      this.crudService.deleteById('epics', this.epicId, name)!.subscribe(() => {
+    forkJoin([
+      this.tasksToDelete.length > 0 ? this.crudService.deleteRelated('tasks', this.tasksToDelete) : of(null),
+      this.crudService.deleteById('epics', this.epicId, name)!
+    ]).subscribe(() => {
         this.router.navigate([`${this.projectId}/epics`]);
-      });
     });
   }
 }

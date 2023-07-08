@@ -14,7 +14,7 @@
           </div>
           <div class="form-group">
             <input type="submit" value="Zapisz" class="btn btn-outline-success" [disabled]="!form!.valid"/>
-            <a class="btn btn-outline-secondary" routerLink="/projects">Anuluj</a>
+            <a class="btn btn-outline-secondary" routerLink="/{{isEditMode ? this.projectId + '/epics' : 'projects'}}">Anuluj</a>
           </div>
         </form>
       </div>

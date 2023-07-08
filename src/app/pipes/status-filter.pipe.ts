@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {StatusEnum} from "../../models/status.enum";
+import {StatusEnum} from "../models/status.enum";
 
 @Pipe({
   name: 'statusFilter'

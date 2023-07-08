@@ -1,59 +1,59 @@
-<div class="row p-5" *ngIf="data">
+<div class="row p-5" *ngIf="taskData">
   <div class="col-md-10 offset-1">
     <div class="card mb-12">
       <div class="row g-0">
         <div class="col-md-12">
           <div class="card-header">
             <h1 class="card-title">
-              {{data.name}}
+              {{taskData.name}}
             </h1>
           </div>
         </div>
         <div class="col-md-12">
         <div class="pt-3 d-flex justify-content-end">
-          <button *ngIf="data.status === statuses[0]" type="button" class="btn btn-outline-primary m-1" (click)="changeStatus()">Zacznij</button>
-          <button *ngIf="data.status === statuses[1]" type="button" class="btn btn-outline-success m-1" (click)="changeStatus()">Zakończ</button>
+          <button *ngIf="taskData.status === statuses[0]" type="button" class="btn btn-outline-primary m-1" (click)="changeStatus()">Zacznij</button>
+          <button *ngIf="taskData.status === statuses[1]" type="button" class="btn btn-outline-success m-1" (click)="changeStatus()">Zakończ</button>
           <button type="button" class="btn btn-outline-warning m-1" routerLink="/{{projectId}}/{{epicId}}/{{taskId}}/edit">Edytuj</button>
-          <button type="button" class="btn btn-outline-danger m-1" (click)="delete(data.name)">Usuń</button>
+          <button type="button" class="btn btn-outline-danger m-1" (click)="delete(taskData.name)">Usuń</button>
         </div>
         </div>
         <div class="col-md-5">
           <div class="card-body">
             <p class="card-text">
-              <b>Przypisany:</b> {{data.user.firstName}} {{data.user.lastName}}
+              <b>Przypisany:</b> {{taskData.user.firstName}} {{taskData.user.lastName}}
             </p>
             <p class="card-text">
-              <b>Projekt: </b> {{project.name}}
+              <b>Projekt: </b> {{projectData.name}}
             </p>
             <p class="card-text">
-              <b>Epic: </b> {{epic.name}}
+              <b>Epic: </b> {{epicData.name}}
             </p>
             <p class="card-text">
-              <b>Piorytet: </b> {{data.priority}}
+              <b>Piorytet: </b> {{taskData.priority}}
             </p>
             <p class="card-text">
-              <b>Status: </b> {{data.status}}
+              <b>Status: </b> {{taskData.status}}
             </p>
-            <p class="card-text" *ngIf="data.createdTime">
+            <p class="card-text" *ngIf="taskData.createdTime">
               <b>Stworzono: </b>
-              {{data.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+              {{taskData.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
-            <p class="card-text" *ngIf="data.startedTime">
+            <p class="card-text" *ngIf="taskData.startedTime">
               <b>Rozpoczęto: </b>
-                {{data.startedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+                {{taskData.startedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
-            <p class="card-text" *ngIf="data.finishedTime">
+            <p class="card-text" *ngIf="taskData.finishedTime">
               <b>Zakończono: </b>
-              {{data.finishedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+              {{taskData.finishedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
-            <p class="card-text" *ngIf="data.startedTime">
-              <b>Czas trwania: {{ {startDate: data.startedTime, endDate: data.finishedTime ? data.finishedTime : this.timeService.getCurrentTime() }| duration }}</b>
+            <p class="card-text" *ngIf="taskData.startedTime">
+              <b>Czas trwania: {{ {startDate: taskData.startedTime, endDate: taskData.finishedTime ? taskData.finishedTime : this.timeService.getCurrentTime() }| duration }}</b>
             </p>
           </div>
         </div>
         <div class="col-md-7">
           <div class="card-body">
-          <p class="card-text">{{data.description}}</p>
+          <p class="card-text">{{taskData.description}}</p>
           </div>
         </div>
         <div class="col-md-12">
