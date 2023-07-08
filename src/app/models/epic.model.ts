@@ -10,9 +10,9 @@ export interface EpicModel {
   priority: string;
   status: string;
   owner: UserModel;
-  tasks: TaskModel[];
+  projectId: string;
   createdTime?: Date;
-  startTime?: Date;
-  finishTime?: Date;
+  startedTime?: Date;
+  finishedTime?: Date;
   id?: string;
 }

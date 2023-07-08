@@ -5,6 +5,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TaskModel} from "../../../models/task.model";
 import {TaskFormComponent} from "../task-form/task-form.component";
 import {StatusEnum} from "../../../models/status.enum";
+import {CalculationsService} from "../../../services/calculations.service";
+import {TimeService} from "../../../services/time.service";
 
 @Component({
   selector: 'app-tasks-list',
@@ -14,34 +16,25 @@ import {StatusEnum} from "../../../models/status.enum";
 export class TasksListComponent implements OnInit{
   projectId: string;
   epicId: string;
-  filename: string;
   data: TaskModel[] = [];
   statuses: string[];
   currentStatuses: string[] = [];
 
-  constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router) {
+  constructor(private crudService: CrudService, private route: ActivatedRoute, public timeService: TimeService) {
     this.projectId = this.route.snapshot.paramMap.get("project")!;
     this.epicId = this.route.snapshot.paramMap.get("epic")!;
-    this.filename = `projects/${this.projectId}/epics/${this.epicId}/tasks`
     this.statuses =  Object.values(StatusEnum);
   }
 
   ngOnInit() {
-    this.crudService.getAll<TaskModel>(this.filename).subscribe(data => {
-      this.data = data
+    this.crudService.getAll<TaskModel>('tasks').subscribe(data => {
+      this.data = data.filter(x => x.epicId === this.epicId)
       this.currentStatuses = this.data.map(x => x.status);
-
     })
   }
 
-  delete(id: string, name: string) {
 
-    this.crudService.deleteById(this.filename, id, name)!.subscribe(() => {
-      window.location.reload();
-    });
-  }
 
-  getCurrentTime(): Date {
-    return new Date();
-  }
+
+
 }

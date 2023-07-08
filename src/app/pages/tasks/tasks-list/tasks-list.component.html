@@ -38,8 +38,8 @@
                   <b>Przypisany:</b> {{item.user.firstName}} {{item.user.lastName}}
                   <b>Piorytet: </b> {{item.priority}}
                 </p>
-                  <ng-container *ngIf="item.startTime">
-                    <b>Czas trwania: {{ {startDate: item.startTime, endDate: item.finishTime ? item.finishTime : getCurrentTime() }| duration }}</b>
+                  <ng-container *ngIf="item.startedTime">
+                    <b>Czas trwania: {{ {startDate: item.startedTime, endDate: item.finishedTime ? item.finishedTime : this.timeService.getCurrentTime() }| duration }}</b>
                   </ng-container>
               </div>
             </div>

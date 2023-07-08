@@ -5,6 +5,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TaskModel} from "../../../models/task.model";
 import {StatusEnum} from "../../../models/status.enum";
 import {UserModel} from "../../../models/user.model";
+import {CalculationsService} from "../../../services/calculations.service";
+import {TimeService} from "../../../services/time.service";
 
 @Component({
   selector: 'app-epic-details',
@@ -19,72 +21,57 @@ export class EpicDetailsComponent implements OnInit{
   statuses: string[];
   isTasksAreDone!: boolean;
   epicsUsers!: UserModel[];
+  workingTime!: number;
+  tasksToDelete!: string[];
 
-  constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router) {
+  constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router, private calc: CalculationsService, public timeService: TimeService) {
     this.projectId = this.route.snapshot.paramMap.get("project")!;
     this.epicId = this.route.snapshot.paramMap.get("epic")!;
     this.statuses = Object.values(StatusEnum)
   }
 
   ngOnInit() {
-    this.crudService.getById<EpicModel>(`projects/${this.projectId}/epics`, this.epicId).subscribe(data => {
+    this.crudService.getById<EpicModel>(`epics`, this.epicId).subscribe(data => {
       this.epicData = data;
     })
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['tasks']) {
-      this.isTasksAreDone = this.tasks && this.tasks.some(task => task.finishTime === undefined)
-      if(this.tasks) {
-        this.epicsUsers = this.getUsers();
+      this.isTasksAreDone = this.tasks && this.tasks.some(task => task.finishedTime === undefined)
+      if (this.tasks) {
+        this.epicsUsers = this.calc.getUsers(this.tasks);
+        this.workingTime = this.calc.getWorkingTime(this.tasks);
+        this.tasksToDelete = this.tasks.map(x => x.id).filter(id => !!id) as string[];
       }
+
     }
-
   }
-
 
   changeStatus() {
     let updatedData: Partial<EpicModel> = {};
 
     switch (this.epicData.status) {
       case StatusEnum.toDo:
-        updatedData = {status: StatusEnum.doing, startTime: new Date()};
+        updatedData = {status: StatusEnum.doing, startedTime: new Date()};
         break;
       case StatusEnum.doing:
-        updatedData = {status: StatusEnum.done, finishTime: new Date()};
+        updatedData = {status: StatusEnum.done, finishedTime: new Date()};
         break;
     }
 
     if (updatedData) {
-      this.crudService.updatePartial<EpicModel>(updatedData, `projects/${this.projectId}/epics`, this.epicId).subscribe(data => {
+      this.crudService.updatePartial<EpicModel>(updatedData, `epics`, this.epicId).subscribe(data => {
         window.location.reload();
       })
     }
   }
-  getCurrentTime(): Date {
-    return new Date();
-  }
-
-  getWorkingTime(): number {
-    const durations = this.tasks.map(task => {
-      if (task.finishTime && task.startTime) {
-        const finishTime = new Date(task.finishTime);
-        const startTime = new Date(task.startTime);
-        return finishTime.getTime() - startTime.getTime();
-      }
-      return 0;
-    });
-    return durations.reduce((sum, duration) => sum + duration, 0);
-  }
-
-  getUsers(): UserModel[] {
-    return Array.from(new Set(this.tasks.map(x => JSON.stringify(x.user)))).map(user => JSON.parse(user));
-  }
 
   delete(name: string) {
-    this.crudService.deleteById(`projects/${this.projectId}/epics`, this.epicId, name)!.subscribe(() => {
-      this.router.navigate([`${this.projectId}/epics`]);
+    this.crudService.deleteRelated('tasks', this.tasksToDelete).subscribe(() => {
+      this.crudService.deleteById('epics', this.epicId, name)!.subscribe(() => {
+        this.router.navigate([`${this.projectId}/epics`]);
+      });
     });
   }
 }

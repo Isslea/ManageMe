@@ -6,6 +6,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {StatusEnum} from "../../../models/status.enum";
 import {ProjectModel} from "../../../models/project.model";
 import {UserModel} from "../../../models/user.model";
+import {CalculationsService} from "../../../services/calculations.service";
+import {forkJoin} from "rxjs";
+import {TimeService} from "../../../services/time.service";
 @Component({
   selector: 'app-project-details',
   templateUrl: './project-details.component.html',
@@ -13,15 +16,19 @@ import {UserModel} from "../../../models/user.model";
 })
 export class ProjectDetailsComponent implements OnInit, OnChanges{
   @Input() epics!: EpicModel[]
+  tasks!: TaskModel[];
   projectData!: ProjectModel
   projectId: string;
   epicId: string;
   isEpicsAreDone!: boolean;
-  projectUsers!: UserModel[]
-  projectWorkingTime! : number;
+  users!: UserModel[]
+  workingTime! : number;
+  predictedTime! : Date;
+  tasksToDelete!: string[];
+  epicsToDelete!: string[];
 
 
-  constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router) {
+  constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router, private calc: CalculationsService, public timeService: TimeService) {
     this.projectId = this.route.snapshot.paramMap.get("project")!;
     this.epicId = this.route.snapshot.paramMap.get("epic")!;
 
@@ -31,13 +38,23 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
     this.crudService.getById<ProjectModel>(`projects`, this.projectId).subscribe(data => {
       this.projectData = data;
     })
+
+    this.crudService.getAll<TaskModel>("tasks").subscribe(data => {
+      this.tasks = data.filter(x => x.projectId === this.projectId);
+      this.users = this.calc.getUsers(this.tasks);
+      this.workingTime = this.calc.getWorkingTime(this.tasks);
+      this.predictedTime = this.calc.getPredictedTime(this.tasks);
+
+      this.tasksToDelete = this.tasks.map(x => x.id).filter(id => !!id) as string[];
+
+    })
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['epics'] && this.epics) {
-        this.isEpicsAreDone = this.epics && this.epics.some((x) => x.finishTime === undefined);
-        this.projectUsers = this.getUsers();
-        this.projectWorkingTime = this.getWorkingTime();
+        this.isEpicsAreDone = this.epics && this.epics.some((x) => x.finishedTime === undefined);
+        this.epicsToDelete = this.epics.map(x => x.id).filter(id => !!id) as string[];
     }
 
   }
@@ -49,56 +66,15 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
     })
 
   }
-  getCurrentTime(): Date {
-    return new Date();
-  }
-
-  getUsers(): UserModel[] {
-    const tasks = this.epics.flatMap(x => x.tasks ? Object.values(x.tasks) : []);
-    return Array.from(new Set(tasks.map(task => JSON.stringify(task.user)))).map(user => JSON.parse(user));
-  }
-
-  getWorkingTime(): number {
-    const durations = this.epics.flatMap(epic => {
-      const tasks = epic.tasks ? Object.values(epic.tasks) : [];
-      return tasks.map(task => {
-        if (task.finishTime && task.startTime) {
-          const finishTime = new Date(task.finishTime);
-          const startTime = new Date(task.startTime);
-          return finishTime.getTime() - startTime.getTime();
-        }
-        return 0;
-      });
-    });
-    return durations.reduce((sum, duration) => sum + duration, 0);
-  }
 
   delete(name: string) {
-    this.crudService.deleteById(`projects`, this.projectId, name)!.subscribe(() => {
-      this.router.navigate([`/projects`]);
+    const deleteTasks$ = this.crudService.deleteRelated('tasks', this.tasksToDelete);
+    const deleteEpics$ = this.crudService.deleteRelated('epics', this.epicsToDelete);
+
+    forkJoin([deleteTasks$, deleteEpics$]).subscribe(() => {
+      this.crudService.deleteById('projects', this.projectId, name)!.subscribe(() => {
+        this.router.navigate(['/projects']);
+      });
     });
   }
-
-  getPredictedTime(): Date {
-    const dueDates: Date[] = this.epics.reduce((dates: Date[], item) => {
-      const tasks = item.tasks ? Object.values(item.tasks) : [];
-      const taskDates = tasks.map(task => new Date(task.dueTime));
-      return dates.concat(taskDates);
-    }, []);
-
-    if (dueDates.length === 0) {
-      return new Date(0);
-    }
-
-    const farthestDate = dueDates.reduce((maxDate, currentDate) => {
-      if (currentDate.getTime() > maxDate.getTime()) {
-        return currentDate;
-      } else {
-        return maxDate;
-      }
-    });
-   return farthestDate;
-  }
-
-
 }

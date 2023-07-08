@@ -32,7 +32,7 @@ export class EpicFormComponent implements OnInit{
     this.isEditMode = this.route.snapshot.routeConfig?.path?.includes('edit')!
     this.projectId = this.route.snapshot.paramMap.get("project")!;
     this.epicId = this.route.snapshot.paramMap.get('epic')!;
-    this.filename = `projects/${this.projectId}/epics`
+    this.filename = `epics`
 
   }
 
@@ -56,6 +56,7 @@ export class EpicFormComponent implements OnInit{
     } else {
       data.status = StatusEnum.toDo;
       data.createdTime = new Date();
+      data.projectId = this.projectId;
       this.crudService.sendForm<EpicModel>(data, this.filename).subscribe(x => {
         this.form.reset()
         this.router.navigate([`${this.projectId}/epics`]);

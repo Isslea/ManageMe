@@ -35,7 +35,7 @@ export class TaskFormComponent implements OnInit{
     this.projectId = this.route.snapshot.paramMap.get("project")!;
     this.epicId = this.route.snapshot.paramMap.get('epic')!;
     this.taskId = this.route.snapshot.paramMap.get('task')!;
-    this.filename = `projects/${this.projectId}/epics/${this.epicId}/tasks`
+    this.filename = `tasks`
 
   }
 
@@ -62,6 +62,8 @@ export class TaskFormComponent implements OnInit{
     } else {
       data.createdTime = new Date();
       data.status = StatusEnum.toDo;
+      data.projectId = this.projectId;
+      data.epicId = this.epicId;
       this.crudService.sendForm<TaskModel>(data, this.filename).subscribe(x => {
         this.form.reset()
         this.router.navigate([`${this.projectId}/${this.epicId}/tasks`]);

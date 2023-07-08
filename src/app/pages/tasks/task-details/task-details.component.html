@@ -38,16 +38,16 @@
               <b>Stworzono: </b>
               {{data.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
-            <p class="card-text" *ngIf="data.startTime">
+            <p class="card-text" *ngIf="data.startedTime">
               <b>Rozpoczęto: </b>
-                {{data.startTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+                {{data.startedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
-            <p class="card-text" *ngIf="data.finishTime">
+            <p class="card-text" *ngIf="data.finishedTime">
               <b>Zakończono: </b>
-              {{data.finishTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+              {{data.finishedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
-            <p class="card-text" *ngIf="data.startTime">
-              <b>Czas trwania: {{ {startDate: data.startTime, endDate: data.finishTime ? data.finishTime : getCurrentTime() }| duration }}</b>
+            <p class="card-text" *ngIf="data.startedTime">
+              <b>Czas trwania: {{ {startDate: data.startedTime, endDate: data.finishedTime ? data.finishedTime : this.timeService.getCurrentTime() }| duration }}</b>
             </p>
           </div>
         </div>

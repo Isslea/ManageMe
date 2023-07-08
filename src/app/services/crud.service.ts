@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {map} from "rxjs";
+import {forkJoin, map, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +61,13 @@ export class CrudService {
         map(fetchedData => ({ ...fetchedData, id }))
       );
   }
+
+  deleteRelated(filename: string, idsToDelete: string[]) {
+    return forkJoin(idsToDelete.map(id => {
+      return this.http.delete(`${this.url}/${filename}/${id}.json`);
+    }));
+  }
+
 
   deleteById(filename: string, id: string, name: string) {
     const confirmed = window.confirm(`Are you sure you want to delete ${name}?`);

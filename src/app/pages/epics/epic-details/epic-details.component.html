@@ -21,7 +21,7 @@
     <p class="card-text">
       <b>Własciciel:</b> {{epicData.owner.firstName}} {{epicData.owner.lastName}}
     </p>
-    <p class="card-text" *ngIf="getUsers().length > 0">
+   <p class="card-text" *ngIf="epicsUsers">
       <b>Uczestnicy: </b>
       <ng-container *ngFor="let user of epicsUsers; let last = last">
         {{user.firstName}} {{user.lastName}}<span *ngIf="!last">, </span>
@@ -33,20 +33,20 @@
       <b>Stworzono: </b>
       {{epicData.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
     </p>
-    <p class="card-text" *ngIf="epicData.startTime">
+    <p class="card-text" *ngIf="epicData.startedTime">
       <b>Rozpoczęto: </b>
-      {{epicData.startTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+      {{epicData.startedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
     </p>
-    <p class="card-text" *ngIf="epicData.finishTime">
+    <p class="card-text" *ngIf="epicData.finishedTime">
       <b>Zakończono: </b>
-      {{epicData.finishTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+      {{epicData.finishedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
     </p>
-    <p class="card-text" *ngIf="epicData.startTime">
+    <p class="card-text" *ngIf="epicData.startedTime">
       <b>Czas
-        trwania:</b> {{  {startDate: epicData.startTime, endDate: epicData.finishTime ? epicData.finishTime : getCurrentTime() }| duration}}
+        trwania:</b> {{  {startDate: epicData.startedTime, endDate: epicData.finishedTime ? epicData.finishedTime : timeService.getCurrentTime() }| duration}}
     </p>
-    <p class="card-text" *ngIf="getWorkingTime() > 0">
-      <b>Roboczogodziny:</b> {{getWorkingTime() | duration}}
+    <p class="card-text" *ngIf="workingTime > 0">
+      <b>Roboczogodziny:</b> {{workingTime | duration}}
     </p>
   </div>
   <p class="card-text pt-5 pb-3">

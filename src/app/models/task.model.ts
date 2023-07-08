@@ -7,10 +7,12 @@ export interface TaskModel {
   description: string;
   status: string;
   priority: string;
+  projectId: string;
+  epicId: string;
   createdTime: Date;
-  startTime?: Date;
+  startedTime?: Date;
   dueTime: Date;
-  finishTime?: Date;
+  finishedTime?: Date;
   user: UserModel;
   id?: string;
 }

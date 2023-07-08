@@ -18,15 +18,15 @@ export class EpicsListComponent implements OnInit{
 
   constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router) {
     this.projectId = this.route.snapshot.paramMap.get("project")!;
-    this.filename = `projects/${this.projectId}/epics`
+    this.filename = `epics`
     this.statuses = Object.values(StatusEnum)
   }
 
   ngOnInit() {
 
     this.crudService.getAll<EpicModel>(this.filename).subscribe(data => {
-      this.epicData = data
-      this.filteredData = data
+      this.epicData = data.filter(x => x.projectId === this.projectId)
+      this.filteredData = data.filter(x => x.projectId === this.projectId)
     })
 
   }
