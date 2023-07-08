@@ -9,11 +9,11 @@
   </div>
   <h2 class="text-center pb-5">{{projectData.name}}</h2>
   <div class="col-6">
-    <p class="card-text" *ngIf="dueDate">
+    <p class="card-text" *ngIf="getPredictedTime() > getCurrentTime()">
       <b>Przewidywany czas: </b>
-      {{dueDate | displayDuration }}
+      {{ {startDate: getCurrentTime(), endDate: getPredictedTime() }| duration}}
     </p>
-    <p class="card-text" *ngIf="projectUsers">
+    <p class="card-text" *ngIf="projectUsers.length > 0">
       <b>Uczestnicy: </b>
       <ng-container *ngFor="let user of projectUsers; let last = last">
         {{user.firstName}} {{user.lastName}}<span *ngIf="!last">, </span>
@@ -30,11 +30,10 @@
       {{projectData.finishedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
     </p>
    <p class="card-text" *ngIf="projectData.createdTime">
-      <b>Czas
-        trwania:</b> {{(projectData.finishedTime ? projectData.finishedTime : getCurrentTime())  | duration: projectData.createdTime}}
-    </p>
+      <b>Czas trwania:</b> {{  {startDate: projectData.createdTime, endDate: projectData.finishedTime ? projectData.finishedTime : getCurrentTime() }| duration}}
+   </p>
    <p class="card-text" *ngIf="projectWorkingTime">
-      <b>Roboczogodziny:</b>{{projectWorkingTime | displayDuration}}
+      <b>Roboczogodziny:</b>{{projectWorkingTime | duration}}
     </p>
   </div>
   <p class="card-text pt-5 pb-3">

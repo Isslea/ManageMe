@@ -21,7 +21,7 @@
     <p class="card-text">
       <b>Własciciel:</b> {{epicData.owner.firstName}} {{epicData.owner.lastName}}
     </p>
-    <p class="card-text" *ngIf="getUsers()">
+    <p class="card-text" *ngIf="getUsers().length > 0">
       <b>Uczestnicy: </b>
       <ng-container *ngFor="let user of epicsUsers; let last = last">
         {{user.firstName}} {{user.lastName}}<span *ngIf="!last">, </span>
@@ -43,10 +43,10 @@
     </p>
     <p class="card-text" *ngIf="epicData.startTime">
       <b>Czas
-        trwania:</b> {{(epicData.finishTime ? epicData.finishTime : getCurrentTime())  | duration: epicData.startTime}}
+        trwania:</b> {{  {startDate: epicData.startTime, endDate: epicData.finishTime ? epicData.finishTime : getCurrentTime() }| duration}}
     </p>
-    <p class="card-text">
-      <b>Roboczogodziny:</b> {{getWorkingTime() | displayDuration}}
+    <p class="card-text" *ngIf="getWorkingTime() > 0">
+      <b>Roboczogodziny:</b> {{getWorkingTime() | duration}}
     </p>
   </div>
   <p class="card-text pt-5 pb-3">

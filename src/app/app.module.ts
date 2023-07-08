@@ -15,7 +15,6 @@ import { StatusFilterPipe } from './pages/pipes/status-filter.pipe';
 import { TaskDetailsComponent } from './pages/tasks/task-details/task-details.component';
 import { DurationPipe } from './pages/pipes/duration.pipe';
 import { EpicDetailsComponent } from './pages/epics/epic-details/epic-details.component';
-import { DisplayDurationPipe } from './pages/pipes/display-duration.pipe';
 import { ProjectDetailsComponent } from './pages/projects/project-details/project-details.component';
 
 @NgModule({
@@ -31,7 +30,6 @@ import { ProjectDetailsComponent } from './pages/projects/project-details/projec
     TaskDetailsComponent,
     DurationPipe,
     EpicDetailsComponent,
-    DisplayDurationPipe,
     ProjectDetailsComponent
   ],
   imports: [

@@ -8,7 +8,7 @@ import {Router} from "@angular/router";
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss']
 })
-export class ProjectsListComponent implements OnInit, OnChanges{
+export class ProjectsListComponent implements OnInit{
   data!: ProjectModel[]
 
 
@@ -16,27 +16,10 @@ export class ProjectsListComponent implements OnInit, OnChanges{
   }
 
   ngOnInit() {
-
     this.crudService.getAll<ProjectModel>('projects').subscribe(data => {
         this.data = data
-      if(this.data){
-
-
-      }
       }
     )
-
-
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['data']) {
-
-      if(this.data) {
-        console.log("x")
-      }
-    }
-
   }
 
 

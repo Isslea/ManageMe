@@ -3,7 +3,6 @@ import {EpicModel} from "../../../models/epic.model";
 import {CrudService} from "../../../services/crud.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TaskModel} from "../../../models/task.model";
-import {EpicsListComponent} from "../epics-list/epics-list.component";
 import {StatusEnum} from "../../../models/status.enum";
 import {UserModel} from "../../../models/user.model";
 

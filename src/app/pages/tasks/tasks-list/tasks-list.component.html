@@ -39,7 +39,7 @@
                   <b>Piorytet: </b> {{item.priority}}
                 </p>
                   <ng-container *ngIf="item.startTime">
-                    <b>Czas trwania: {{(item.finishTime ? item.finishTime : getCurrentTime())  | duration: item.startTime}}</b>
+                    <b>Czas trwania: {{ {startDate: item.startTime, endDate: item.finishTime ? item.finishTime : getCurrentTime() }| duration }}</b>
                   </ng-container>
               </div>
             </div>

@@ -9,7 +9,7 @@ import {TaskFormComponent} from "./pages/tasks/task-form/task-form.component";
 import {TaskDetailsComponent} from "./pages/tasks/task-details/task-details.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: '/', pathMatch: 'full'},
+  { path: '', redirectTo: '/projects', pathMatch: 'full'},
   { path: 'projects', component: ProjectsListComponent },
   { path: 'project/create', component: ProjectFormComponent },
   { path: ':project/edit', component: ProjectFormComponent },

@@ -43,12 +43,12 @@ export class EpicsListComponent implements OnInit{
     this.router.navigate([`${this.projectId}/${id}/tasks`]);
   }
 
-  filterEpics(status: string) {
-    if(this.filteredData.length !== this.epicData.length)
+  filterEpics(status?: string) {
+    if(!status && this.filteredData.length !== this.epicData.length)
     {
       this.filteredData = this.epicData
     }
-    else {
+    if(status) {
       this.filteredData = this.epicData.filter(x => x.status == status)
     }
 

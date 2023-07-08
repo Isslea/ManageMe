@@ -47,7 +47,7 @@
               {{data.finishTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
             <p class="card-text" *ngIf="data.startTime">
-              <b>Czas trwania: {{(data.finishTime ? data.finishTime : getCurrentTime())  | duration: data.startTime}}</b>
+              <b>Czas trwania: {{ {startDate: data.startTime, endDate: data.finishTime ? data.finishTime : getCurrentTime() }| duration }}</b>
             </p>
           </div>
         </div>

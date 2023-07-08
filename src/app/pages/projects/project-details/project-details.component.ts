@@ -6,7 +6,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {StatusEnum} from "../../../models/status.enum";
 import {ProjectModel} from "../../../models/project.model";
 import {UserModel} from "../../../models/user.model";
-
 @Component({
   selector: 'app-project-details',
   templateUrl: './project-details.component.html',
@@ -18,9 +17,8 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
   projectId: string;
   epicId: string;
   isEpicsAreDone!: boolean;
-  projectUsers!: UserModel[];
-  projectWorkingTime! : number
-  dueDate!: number;
+  projectUsers!: UserModel[]
+  projectWorkingTime! : number;
 
 
   constructor(private crudService: CrudService, private route: ActivatedRoute, private router: Router) {
@@ -33,19 +31,13 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
     this.crudService.getById<ProjectModel>(`projects`, this.projectId).subscribe(data => {
       this.projectData = data;
     })
-
-
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['epics']) {
-      if(this.epics) {
+    if (changes['epics'] && this.epics) {
         this.isEpicsAreDone = this.epics && this.epics.some((x) => x.finishTime === undefined);
-        this.projectUsers = this.getUsers()
+        this.projectUsers = this.getUsers();
         this.projectWorkingTime = this.getWorkingTime();
-        this.dueDate = this.getPredictedTime()
-      }
     }
 
   }
@@ -62,13 +54,13 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
   }
 
   getUsers(): UserModel[] {
-    const tasks = this.epics.flatMap(x => Object.values(x.tasks));
-    return  Array.from(new Set(tasks.map(task => JSON.stringify(task.user)))).map(user => JSON.parse(user));
+    const tasks = this.epics.flatMap(x => x.tasks ? Object.values(x.tasks) : []);
+    return Array.from(new Set(tasks.map(task => JSON.stringify(task.user)))).map(user => JSON.parse(user));
   }
 
   getWorkingTime(): number {
     const durations = this.epics.flatMap(epic => {
-      const tasks = Object.values(epic.tasks);
+      const tasks = epic.tasks ? Object.values(epic.tasks) : [];
       return tasks.map(task => {
         if (task.finishTime && task.startTime) {
           const finishTime = new Date(task.finishTime);
@@ -87,14 +79,15 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
     });
   }
 
-  getPredictedTime(): number {
+  getPredictedTime(): Date {
     const dueDates: Date[] = this.epics.reduce((dates: Date[], item) => {
-      const taskDates = Object.values(item.tasks).map(task => new Date(task.dueTime));
+      const tasks = item.tasks ? Object.values(item.tasks) : [];
+      const taskDates = tasks.map(task => new Date(task.dueTime));
       return dates.concat(taskDates);
     }, []);
 
     if (dueDates.length === 0) {
-      return 0;
+      return new Date(0);
     }
 
     const farthestDate = dueDates.reduce((maxDate, currentDate) => {
@@ -104,7 +97,7 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
         return maxDate;
       }
     });
-   return farthestDate.getTime() - new Date().getTime()
+   return farthestDate;
   }
 
 
