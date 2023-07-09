@@ -66,7 +66,7 @@ export class ProjectDetailsComponent implements OnInit, OnChanges{
   delete(name: string) {
     forkJoin([
       this.tasksToDelete.length > 0 ? this.crudService.deleteRelated('tasks', this.tasksToDelete) : of(null),
-      this.tasksToDelete.length > 0 ? this.crudService.deleteRelated('epics', this.epicsToDelete) : of(null)
+      this.epicsToDelete.length > 0 ? this.crudService.deleteRelated('epics', this.epicsToDelete) : of(null)
     ]).subscribe(() => {
       this.crudService.deleteById('projects', this.projectId, name)!.subscribe(() => {
         this.router.navigate(['/projects']);
