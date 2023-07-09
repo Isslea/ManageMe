@@ -38,6 +38,10 @@
               <b>Stworzono: </b>
               {{taskData.createdTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
             </p>
+            <p class="card-text" *ngIf="taskData.dueTime">
+              <b>Przewidywany czas: </b>
+              {{taskData.dueTime | date: 'dd.MM.yyyy, HH:mm:ss'}}
+            </p>
             <p class="card-text" *ngIf="taskData.startedTime">
               <b>Rozpoczęto: </b>
                 {{taskData.startedTime | date: 'dd.MM.yyyy, HH:mm:ss'}}

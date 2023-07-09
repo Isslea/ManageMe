@@ -16,11 +16,11 @@ import {forkJoin, of} from "rxjs";
   styleUrls: ['./epic-details.component.scss']
 })
 export class EpicDetailsComponent implements OnInit{
+  @Input() taskData!: TaskModel[]
   projectId: string;
   epicId: string;
   statuses: string[];
   epicData!: EpicModel
-  @Input() taskData!: TaskModel[]
   isTasksAreDone!: boolean;
   epicsUsers!: UserModel[];
   workingTime!: number;
