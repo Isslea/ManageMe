@@ -32,7 +32,7 @@ export class DurationPipe implements PipeTransform {
     } else if (minutes > 0) {
       displayDuration = minutes + 'm';
     } else if (seconds > 0) {
-      displayDuration = seconds + 's';
+      displayDuration = "<1m";
     }
 
     return displayDuration.trim();

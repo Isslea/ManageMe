@@ -1,0 +1,25 @@
+<div class="row text">
+  <div class="col-md-10 offset-1">
+    <div class="row">
+      <div class="col-md-10 offset-1">
+        <form [formGroup]="form" (ngSubmit)="onSubmit(form)">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" formControlName="email" class="form-control" autocomplete="email">
+            <span *ngIf="!form!.get('email')!.valid && (form!.get('email')!.dirty || form!.get('email')!.touched)"> Email jest niepoprawny!<br></span>
+          </div>
+          <div class="form-group">
+            <label for="password">Hasło</label>
+            <input type="password" id="password" formControlName="password" class="form-control" autocomplete="password">
+            <span *ngIf="!form!.get('password')!.valid && (form!.get('password')!.dirty || form!.get('password')!.touched)"> Hasło jest wymagane!</span>
+            <span *ngIf="errorPassword"> {{errorPassword}}</span>
+          </div>
+          <div class="form-group">
+            <input type="submit" value="Zapisz" class="btn btn-outline-success" [disabled]="!form!.valid"/>
+            <!--<a class="btn btn-outline-secondary" routerLink="/{{isEditMode ? this.projectId + '/epics' : 'projects'}}">Anuluj</a>-->
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

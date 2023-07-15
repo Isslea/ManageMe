@@ -16,6 +16,8 @@ import { TaskDetailsComponent } from './pages/tasks/task-details/task-details.co
 import { DurationPipe } from './pipes/duration.pipe';
 import { EpicDetailsComponent } from './pages/epics/epic-details/epic-details.component';
 import { ProjectDetailsComponent } from './pages/projects/project-details/project-details.component';
+import { UserRegisterComponent } from './pages/users/user-register/user-register.component';
+import { UserLoginComponent } from './pages/users/user-login/user-login.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { ProjectDetailsComponent } from './pages/projects/project-details/projec
     TaskDetailsComponent,
     DurationPipe,
     EpicDetailsComponent,
-    ProjectDetailsComponent
+    ProjectDetailsComponent,
+    UserRegisterComponent,
+    UserLoginComponent
   ],
   imports: [
     BrowserModule,

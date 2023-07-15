@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {UserLoggedModel} from "./models/userLogged.model";
+import {LoggingService} from "./services/logging.service";
 
 @Component({
   selector: 'app-root',
@@ -11,10 +13,11 @@ export class AppComponent implements OnInit{
   projectId!: string;
   epicId!: string;
   words: string[] = ["projects", "epics", "tasks", "details", "create", "edit"];
-  constructor(private router: Router, private route: ActivatedRoute) {
+  isUserLogged!: boolean;
+  userLogged!: UserLoggedModel;
+  constructor(private router: Router, private route: ActivatedRoute, private logginService: LoggingService) {
 
-  }
-
+}
   ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -32,6 +35,24 @@ export class AppComponent implements OnInit{
         }
       }
     });
+
+    this.logginService.isUserLogged$.subscribe((isLogged) => {
+      this.isUserLogged = isLogged;
+    });
+
+    const storageData = localStorage.getItem('userLogged');
+    if (storageData) {
+      this.userLogged = JSON.parse(storageData);
+      this.logginService.setUserLogged(true);
+    }
+}
+
+logout() {
+    if(this.userLogged){
+      this.logginService.setUserLogged(false);
+      localStorage.removeItem('userLogged');
+      this.router.navigate(['/login']);
+    }
 }
 
 
